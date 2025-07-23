@@ -58,7 +58,7 @@
 import { computed, ref } from 'vue'
 import type { CheckWithStatus } from '@/types/Check'
 import { formatDateTime } from '@/utils/Datetime';
-import { mapPerformanceData, type PerformanceData } from '@/types/PerformanceData';
+import { mapPerformanceData } from '@/types/PerformanceData';
 import { getCheckPerformanceData } from '@/api/pinglow';
 import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
