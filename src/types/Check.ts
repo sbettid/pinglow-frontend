@@ -1,7 +1,12 @@
 export interface Check {
-    id: string
-    name: string
-    status: string
-    last_checked: string,
+    check_name: string
+    interval: number,
+    language: string
+}
+
+export interface CheckWithStatus {
+    check_name: string
     output: string,
+    status: string,
+    timestamp: string
 }
