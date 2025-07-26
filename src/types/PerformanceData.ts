@@ -7,7 +7,16 @@ export interface PerformanceData {
 }
 
 function getRandomColor() {
-    const colors = ['#42A5F5', '#66BB6A', '#FFA726', '#EF5350', '#AB47BC', '#26C6DA', '#FF7043'];
+    const colors = [
+        '#1E88E5',
+        '#43A047',
+        '#FB8C00',
+        '#E53935',
+        '#8E24AA',
+        '#00ACC1',
+        '#F4511E'
+    ];
+
     return colors[Math.floor(Math.random() * colors.length)];
 }
 

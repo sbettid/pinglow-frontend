@@ -1,5 +1,5 @@
 <template>
-  <h1>Pinglow</h1>
+  <h1 class="pinglow-title">Pinglow</h1>
   <v-container class="checks-container">
     <v-row>
       <v-col
@@ -39,7 +39,16 @@ onMounted(async () => {
 
 </script>
 
+<style>
+#app {
+  padding: 0;
+}
+</style>
+
 <style scoped>
+.pinglow-title {
+  margin-top: 2rem;
+}
 .checks-container {
   margin-top: 20px;
 }

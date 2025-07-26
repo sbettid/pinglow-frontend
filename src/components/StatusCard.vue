@@ -19,8 +19,19 @@
     </v-card>
 
       <!-- Modal -->
-  <v-dialog v-model="dialog" max-width="600">
+  <v-dialog 
+    v-model="dialog" 
+    :max-width="isMobile? '100%' : '800'" 
+    class="transition-transform duration-300" 
+    :transition="isMobile ? 'dialog-bottom-transition' : 'dialog-transition'"
+    :fullscreen="isMobile"
+  >
     <v-card>
+      <div
+       class="modal-rotated"
+        :class="{ rotated: isMobile && isPortrait }"
+
+      >
       <v-card-title>
         Details
       </v-card-title>
@@ -49,13 +60,14 @@
           @click="dialog = false"
         ></v-btn>
       </v-card-actions>
+      </div>
     </v-card>
   </v-dialog>
 </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { CheckWithStatus } from '@/types/Check'
 import { formatDateTime } from '@/utils/Datetime';
 import { mapPerformanceData } from '@/types/PerformanceData';
@@ -64,6 +76,23 @@ import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
 
 const props = defineProps<{ check: CheckWithStatus }>();
+
+const isMobile = ref(false)
+const isPortrait = ref(false)
+
+function updateDeviceState() {
+  isMobile.value = window.innerWidth < 768
+  isPortrait.value = window.matchMedia('(orientation: portrait)').matches
+}
+
+onMounted(() => {
+  updateDeviceState()
+  window.addEventListener('resize', updateDeviceState)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateDeviceState)
+})
 
 const cardColor = computed(() => {
   switch (props.check.status) {
@@ -115,5 +144,14 @@ function getChipColor(status: string | undefined): string {
 .check-details {
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .modal {
+    width: 400px;
+    right: 0;
+    top: 0;
+    height: 100%;
+  }
 }
 </style>
