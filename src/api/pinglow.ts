@@ -13,6 +13,7 @@ const api = axios.create({
 
 export async function getChecks(): Promise<Check[]> {
     const response = await api.get<Check[]>('/checks');
+    console.log(response);
     return response.data;
 }
 
