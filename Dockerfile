@@ -3,24 +3,27 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files and install deps
-COPY package*.json ./
+# Install dependencies
+COPY client/ .
 RUN npm install
 
-# Copy source code and build
-COPY . .
 RUN npm run build
 
 
-# ---------- Production stage ----------
-FROM nginx:stable-alpine
+# ---------- Production Node.js server ----------
+FROM node:20-alpine
 
-# Copy built app to nginx public folder
-COPY --from=builder /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Remove default nginx config and replace with custom one (optional)
-COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy built Vue app
+COPY --from=builder /app/dist ./dist
+
+# Copy only required files to run the server
+COPY server/ .
+
+# Install only express-related deps (optional optimization)
+RUN npm install
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "app.js"]
