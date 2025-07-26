@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Check, CheckWithStatus } from '@/types/Check'
 import type { PerformanceData } from '@/types/PerformanceData';
 
-const axiosInstance = axios.create({ baseURL: "http://localhost:80/api" });
+const axiosInstance = axios.create({ baseURL: "http://localhost/api" });
 
 export async function getChecks(): Promise<Check[]> {
     const response = await axiosInstance.get<Check[]>('/checks');
