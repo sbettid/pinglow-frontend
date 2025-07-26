@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - "v*"  # or your default branch
-  workflow_dispatch:    # allows manual run from GitHub UI
 
 jobs:
   build-and-push:
@@ -27,6 +26,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract tag version
+        id: extract_tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
@@ -34,5 +37,5 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ github.repository }}:latest
+        tags: ghcr.io/${{ github.repository }}:${{ env.VERSION }}
 
