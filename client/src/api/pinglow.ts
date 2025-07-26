@@ -6,7 +6,6 @@ const axiosInstance = axios.create({ baseURL: "/api" });
 
 export async function getChecks(): Promise<Check[]> {
     const response = await axiosInstance.get<Check[]>('/checks');
-    console.log(response);
     return response.data;
 }
 
