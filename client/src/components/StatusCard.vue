@@ -49,13 +49,14 @@
           <v-spacer></v-spacer>
         </div>
         
-          <performance-data-chart :data="chartDataset"></performance-data-chart>
+          <performance-data-chart class="chart" :data="chartDataset"></performance-data-chart>
       </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
+      <v-card-actions class="actions">
+        <v-spacer class="space"></v-spacer>
 
         <v-btn
+          class="close"
           text="Close"
           @click="dialog = false"
         ></v-btn>
@@ -152,11 +153,32 @@ function getChipColor(status: string | undefined): string {
 
   .check-details {
     height: 90vw;
-    width: 76vh;
+    width: 72vh;
+    padding: 15px;
   }
 
   .description {
     min-width: 200px;
+  }
+
+  .chart {
+    align-self: center;
+  }
+
+  .actions {
+    width: 100vh;
+    justify-content: center;
+
+    .space {
+      flex-grow: unset;
+      width: 0;
+      height: 0;
+    }
+
+    .close {
+      margin-right: 28px;
+      padding-bottom: 20px;
+    }
   }
 }
 

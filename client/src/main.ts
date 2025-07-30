@@ -11,6 +11,9 @@ import "vuetify/styles/main.css"
 const vuetify = createVuetify({
     components,
     directives,
+    theme: {
+        defaultTheme: 'system', // auto-detects system theme (light/dark)
+    }
 })
 
 const app = createApp(App);

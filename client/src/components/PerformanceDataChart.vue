@@ -1,9 +1,9 @@
 <template>
-    <Line :data="props.data" :options="chartOptions" />
+    <Line ref="lineChart" :data="props.data" :options="chartOptions" />
 </template>
 
 <script setup lang="ts">
-import { Line } from 'vue-chartjs'
+import { Line, type ChartComponentRef } from 'vue-chartjs'
 import {
   Chart as ChartJS,
   Title,
@@ -20,7 +20,7 @@ import {
 import type { ChartOptions } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-date-fns'
-import { computed } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 
 ChartJS.register(
   Title,
@@ -50,8 +50,14 @@ const max = computed(() => {
   return Math.max(...pointData.value);
 });
 
-console.log(min);
-console.log(max)
+
+const lineChart = ref<ChartComponentRef<'line'> | null>(null);
+
+onMounted(() => {
+  nextTick(() => {
+    zoomToLastPercent(0.1);
+  });
+});
 
 const chartOptions = computed<ChartOptions<'line'>>(() => {
   return {
@@ -83,6 +89,18 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
   },
     plugins: {
     zoom: {
+      limits: {
+      x: {
+        min: 'original',
+        max: 'original',
+        minRange: 10 // Prevent zooming in too far
+      },
+      y: {
+        min: 'original',
+        max: 'original',
+        minRange: 5
+      }
+    },
       zoom: {
         wheel: {
           enabled: true 
@@ -102,4 +120,25 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
 }
 });
 
+function zoomToLastPercent(percent: number) {
+  const chart = lineChart.value?.chart;
+  if (!chart) return;
+
+  const xScale = chart.scales['x'];
+  if (!xScale) return;
+
+  const fullMin = xScale.min;
+  const fullMax = xScale.max;
+
+  if (fullMin === undefined || fullMax === undefined) return;
+
+  const range = fullMax - fullMin;
+  const newMin = fullMax - range * percent;
+  const newMax = fullMax;
+
+  xScale.options.min = newMin;
+  xScale.options.max = newMax;
+
+  chart.update();
+}
 </script>
