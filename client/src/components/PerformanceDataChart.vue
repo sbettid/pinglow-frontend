@@ -112,8 +112,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
       },
       pan: {
         enabled: true,
-        mode: 'x',
-        modifierKey: null
+        mode: 'x'
       }
     }
   }
