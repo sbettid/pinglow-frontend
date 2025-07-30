@@ -108,12 +108,12 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
         pinch: {
           enabled: true
         },
-        mode: 'xy'
+        mode: 'x'
       },
       pan: {
         enabled: true,
-        mode: 'xy',
-        modifierKey: 'ctrl'
+        mode: 'x',
+        modifierKey: null
       }
     }
   }

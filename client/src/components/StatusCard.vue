@@ -153,20 +153,23 @@ function getChipColor(status: string | undefined): string {
 
   .check-details {
     height: 90vw;
-    width: 72vh;
+    width: 98vh;
     padding: 15px;
   }
 
   .description {
     min-width: 200px;
+    margin-top: 20px;
   }
 
   .chart {
     align-self: center;
+    width: 70% !important;
+    margin-top: 20px;
   }
 
   .actions {
-    width: 100vh;
+    width: 98vh;
     justify-content: center;
 
     .space {
@@ -176,7 +179,6 @@ function getChipColor(status: string | undefined): string {
     }
 
     .close {
-      margin-right: 28px;
       padding-bottom: 20px;
     }
   }
