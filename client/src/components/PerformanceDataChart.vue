@@ -80,6 +80,24 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
       min: min.value - (min.value * 0.05),
       max: max.value + (max.value * 0.05),
     }
+  },
+    plugins: {
+    zoom: {
+      zoom: {
+        wheel: {
+          enabled: true 
+        },
+        pinch: {
+          enabled: true
+        },
+        mode: 'xy'
+      },
+      pan: {
+        enabled: true,
+        mode: 'xy',
+        modifierKey: 'ctrl'
+      }
+    }
   }
 }
 });
