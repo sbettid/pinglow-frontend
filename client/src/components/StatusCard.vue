@@ -6,7 +6,7 @@
     hover 
     class="pa-6" 
     :class="['card', cardColor]"
-    min-width="300"
+    min-width="270"
     @click="openModal(check)"
     >
       <v-card-title class="text-wrap">{{ check.check_name }}</v-card-title>
@@ -32,12 +32,10 @@
         :class="{ rotated: isMobile && isPortrait }"
 
       >
-      <v-card-title>
-        Details
-      </v-card-title>
-
       <v-card-text class="check-details">
-          <div>Status:
+        <div class="description">
+          <b>Details</b>
+           <div>Status:
             <v-chip 
               small 
               :color="getChipColor(selectedCheck?.status)" 
@@ -49,6 +47,8 @@
           </div> 
           <div>Output: {{ selectedCheck?.output }}</div>
           <v-spacer></v-spacer>
+        </div>
+        
           <performance-data-chart :data="chartDataset"></performance-data-chart>
       </v-card-text>
 
@@ -144,14 +144,25 @@ function getChipColor(status: string | undefined): string {
 .check-details {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
-@media (min-width: 768px) {
-  .modal {
-    width: 400px;
-    right: 0;
-    top: 0;
-    height: 100%;
+.rotated {
+  transform: rotate(90deg);
+
+  .check-details {
+    height: 90vw;
+    width: 76vh;
+  }
+
+  .description {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .check-details {
+    flex-direction: row;
   }
 }
 </style>
