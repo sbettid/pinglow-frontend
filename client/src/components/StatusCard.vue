@@ -152,8 +152,8 @@ function getChipColor(status: string | undefined): string {
   transform: rotate(90deg);
 
   .check-details {
-    height: 90vw;
-    width: 98vh;
+    height: 90dvw;
+    width: 97dvh;
     padding: 15px;
   }
 
@@ -169,7 +169,7 @@ function getChipColor(status: string | undefined): string {
   }
 
   .actions {
-    width: 98vh;
+    width: 97dvh;
     justify-content: center;
 
     .space {

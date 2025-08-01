@@ -37,6 +37,7 @@ export function mapPerformanceData(apiData: Record<string, Record<string, number
         data,
         borderColor: getRandomColor(),
         backgroundColor: 'transparent', // or a light shade
+        fill: true,
         tension: 0.3, // optional: smooth line
     }));
 }

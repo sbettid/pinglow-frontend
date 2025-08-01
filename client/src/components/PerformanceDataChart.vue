@@ -55,6 +55,7 @@ const lineChart = ref<ChartComponentRef<'line'> | null>(null);
 
 onMounted(() => {
   nextTick(() => {
+    console.log("zooming")
     zoomToLastPercent(0.1);
   });
 });
@@ -83,8 +84,8 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
         display: true,
         text: 'Performance'
       },
-      min: min.value - (min.value * 0.05),
-      max: max.value + (max.value * 0.05),
+      min: min.value - (min.value * 0.025),
+      max: max.value + (max.value * 0.025),
     }
   },
     plugins: {
