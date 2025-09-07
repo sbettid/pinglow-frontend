@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  rust-ci:
+  build:
     runs-on: ubuntu-latest
 
     steps:
