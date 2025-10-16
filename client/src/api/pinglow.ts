@@ -18,3 +18,23 @@ export async function getCheckPerformanceData(check: CheckWithStatus): Promise<P
     const response = await axiosInstance.get<PerformanceData>(`/performance-data/${check.check_name}`);
     return response.data;
 }
+
+export async function muteNotificaton(check: CheckWithStatus, until: String | null): Promise<void> {
+    let baseUrl = `/check/${check.check_name}/mute`;
+
+    if (until !== null) {
+        baseUrl += `?until=${until}`;
+    }
+
+    await axiosInstance.put<void>(baseUrl);
+
+    return;
+}
+
+export async function unmuteNotificaton(check: CheckWithStatus): Promise<void> {
+    let baseUrl = `/check/${check.check_name}/mute`;
+
+    await axiosInstance.delete<void>(baseUrl);
+
+    return;
+}
