@@ -112,6 +112,7 @@ import { getCheckPerformanceData, muteNotificaton, unmuteNotificaton } from '@/a
 import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
 
+const emit = defineEmits(['refresh-check'])
 const props = defineProps<{ check: CheckWithStatus }>();
 
 const isMobile = ref(false)
@@ -165,10 +166,13 @@ async function muteNotifications(check: CheckWithStatus, durationMinutes: number
 
   await muteNotificaton(check, muteUntil);
 
+  emit("refresh-check");
+
 }
 
 async function unmuteNotifications(check: CheckWithStatus) {
   await unmuteNotificaton(check);
+  emit("refresh-check");
 }
 
 async function openModal(check: CheckWithStatus) {
@@ -191,7 +195,7 @@ function getChipColor(status: string | undefined): string {
     case 'Critical':
       return 'red'
     default:
-      return 'grey'
+      return 'purple'
   }
 }
 
