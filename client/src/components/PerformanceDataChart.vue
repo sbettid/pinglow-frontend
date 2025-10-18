@@ -43,11 +43,13 @@ const pointData = computed(() => {
 })
 
 const min = computed(() => {
-  return Math.min(...pointData.value);
+  const numbers = pointData.value.filter((n): n is number => n !== null);
+  return Math.min(...numbers);
 });
 
 const max = computed(() => {
-  return Math.max(...pointData.value);
+  const numbers = pointData.value.filter((n): n is number => n !== null);
+  return Math.max(...numbers);
 });
 
 
