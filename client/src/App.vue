@@ -10,7 +10,7 @@
         :key="check.check_name"
         class="d-flex"
       >
-        <StatusCard :check="check"  class="flex-grow-1"/>
+        <StatusCard :check="check"  class="flex-grow-1" @refresh-check="refreshCheckStatus(check.check_name)" />
       </v-col>
     </v-row>
   </v-container>
@@ -22,20 +22,37 @@ import StatusCard from './components/StatusCard.vue'
 import type { Check, CheckWithStatus } from '@/types/Check'
 import { getChecks, getCheckStatus } from './api/pinglow';
 
-
 const checks = ref<Check[]>([]);
 
 const checksWithStatus = ref<CheckWithStatus[]>([]);
 
 onMounted(async () => {
+
   checks.value = await getChecks()
 
   for (const check of checks.value) {
+
     const checkWithStatus = await getCheckStatus(check);
 
     checksWithStatus.value.push(checkWithStatus);
   }
 })
+
+async function refreshCheckStatus(check_name: string) {
+
+  const checkIndex = checks.value.findIndex(item => item.check_name == check_name);
+
+  const check = checks.value[checkIndex];
+
+  if (!check) {
+    return;
+  }
+
+  const refreshedCheck = await getCheckStatus(check);
+
+  checksWithStatus.value[checkIndex] = refreshedCheck;
+
+}
 
 </script>
 

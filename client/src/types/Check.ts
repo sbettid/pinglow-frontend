@@ -8,5 +8,7 @@ export interface CheckWithStatus {
     check_name: string
     output: string,
     status: string,
-    timestamp: string
+    timestamp: string,
+    notifications_muted: boolean | null,
+    notifications_muted_until: String | null
 }

@@ -9,7 +9,11 @@
     min-width="270"
     @click="openModal(check)"
     >
-      <v-card-title class="text-wrap">{{ check.check_name }}</v-card-title>
+      
+      <v-card-title class="text-wrap">
+        {{ check.check_name }}
+        <v-icon v-if="check.notifications_muted" class="notifications-icon" icon="mdi-bell-cancel" size="small"></v-icon>
+      </v-card-title>
       <v-card-subtitle class="last-checked">
         Checked: {{ formatDateTime(check.timestamp) }}
       </v-card-subtitle>
@@ -34,7 +38,36 @@
       >
       <v-card-text class="check-details">
         <div class="description">
-          <b>Details</b>
+          <div class="check-details-header">
+            <b>Details</b>
+            <v-menu>
+              <template v-slot:activator="{ props }">
+                 <v-btn v-bind="props" v-if="check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
+                <v-btn v-bind="props" v-else class="notifications-icon" rounded="lg" variant="plain" icon="mdi-bell" ></v-btn>
+              </template>
+              <v-list>
+                <v-list-item @click="muteNotifications(check, 60)">
+                  <v-list-item-title>Mute for 1h</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="muteNotifications(check, 480)">
+                  <v-list-item-title>Mute for 8h</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="muteNotifications(check, 1440)">
+                  <v-list-item-title>Mute for 1 day</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="muteNotifications(check, 10080)">
+                  <v-list-item-title>Mute for 1 week</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="muteNotifications(check, null)">
+                  <v-list-item-title>Mute forever</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="unmuteNotifications(check)">
+                  <v-list-item-title>Un-mute</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
+          
            <div>Status:
             <v-chip 
               small 
@@ -46,6 +79,9 @@
             </v-chip>
           </div> 
           <div>Output: {{ selectedCheck?.output }}</div>
+          <div class="notifications-muted-message" v-if="check.notifications_muted">
+            Notifications muted {{ check.notifications_muted_until !== null? "until " + check.notifications_muted_until: "" }}
+          </div>
           <v-spacer></v-spacer>
         </div>
         
@@ -72,10 +108,11 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { CheckWithStatus } from '@/types/Check'
 import { formatDateTime } from '@/utils/Datetime';
 import { mapPerformanceData } from '@/types/PerformanceData';
-import { getCheckPerformanceData } from '@/api/pinglow';
+import { getCheckPerformanceData, muteNotificaton, unmuteNotificaton } from '@/api/pinglow';
 import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
 
+const emit = defineEmits(['refresh-check'])
 const props = defineProps<{ check: CheckWithStatus }>();
 
 const isMobile = ref(false)
@@ -115,6 +152,29 @@ const chartDataset = ref<ChartData<'line', Point[], unknown>>({
   datasets: []
 });
 
+async function muteNotifications(check: CheckWithStatus, durationMinutes: number | null) {
+
+  let muteUntil = null;
+
+  if (durationMinutes !== null) {
+    const now = new Date();
+
+    now.setMinutes(now.getMinutes() + durationMinutes);
+
+    muteUntil = now.toISOString();
+  }
+
+  await muteNotificaton(check, muteUntil);
+
+  emit("refresh-check");
+
+}
+
+async function unmuteNotifications(check: CheckWithStatus) {
+  await unmuteNotificaton(check);
+  emit("refresh-check");
+}
+
 async function openModal(check: CheckWithStatus) {
   selectedCheck.value = check
   dialog.value = true
@@ -135,7 +195,7 @@ function getChipColor(status: string | undefined): string {
     case 'Critical':
       return 'red'
     default:
-      return 'grey'
+      return 'purple'
   }
 }
 
@@ -182,6 +242,23 @@ function getChipColor(status: string | undefined): string {
       padding-bottom: 20px;
     }
   }
+}
+
+.notifications-icon {
+  margin-top: -3px;
+  color: #4f5b50;
+}
+
+.check-details-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notifications-muted-message {
+  color: #4f5b50;
+  font-size: small;
 }
 
 @media (max-width: 768px) {
