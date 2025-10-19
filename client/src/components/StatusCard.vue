@@ -45,7 +45,7 @@
                  <v-btn v-bind="props" v-if="check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
                 <v-btn v-bind="props" v-else class="notifications-icon" rounded="lg" variant="plain" icon="mdi-bell" ></v-btn>
               </template>
-              <v-list>
+              <v-list class="menu" :class="{ rotated: isMobile && isPortrait }">
                 <v-list-item @click="muteNotifications(check, 60)">
                   <v-list-item-title>Mute for 1h</v-list-item-title>
                 </v-list-item>
@@ -210,6 +210,11 @@ function getChipColor(status: string | undefined): string {
 
 .rotated {
   transform: rotate(90deg);
+
+  &.menu {
+      transform: rotate(90deg) translateY(-50%);
+      transform-origin: top left;
+  }
 
   .check-details {
     height: 90dvw;
