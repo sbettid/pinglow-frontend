@@ -1,5 +1,8 @@
 <template>
-    <Line ref="lineChart" :data="props.data" :options="chartOptions" :plugins="[firstZoomPlugin]" />
+    <div class="no-performance-data" v-if="Object.keys(props.data.datasets).length === 0">
+      No performance data available.
+    </div>
+    <Line v-else ref="lineChart" :data="props.data" :options="chartOptions" :plugins="[firstZoomPlugin]" />
 </template>
 
 <script setup lang="ts">
@@ -154,3 +157,10 @@ function zoomToLastPercent(percent: number) {
   firstZoom = true;
 }
 </script>
+<style lang="scss" scoped>
+.no-performance-data {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+</style>

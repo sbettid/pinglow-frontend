@@ -13,8 +13,9 @@
       <v-card-title class="text-wrap">
         {{ check.check_name }}
         <v-icon v-if="check.notifications_muted" class="notifications-icon" icon="mdi-bell-cancel" size="small"></v-icon>
+         <v-icon v-if="check.passive" class="notifications-icon" icon="mdi-eye-check" size="small"></v-icon>
       </v-card-title>
-      <v-card-subtitle class="last-checked">
+      <v-card-subtitle v-if="check.timestamp !== null" class="last-checked">
         Checked: {{ formatDateTime(check.timestamp) }}
       </v-card-subtitle>
       <v-card-text>
@@ -140,6 +141,8 @@ const cardColor = computed(() => {
       return 'bg-orange-lighten-4'
     case 'Critical':
       return 'bg-red-lighten-4'
+    case 'Pending':
+      return 'bg-blue-lighten-4'
     default:
       return 'bg-purple-lighten-4'
   }
@@ -194,6 +197,8 @@ function getChipColor(status: string | undefined): string {
       return 'orange'
     case 'Critical':
       return 'red'
+    case 'Pending':
+      return 'blue'
     default:
       return 'purple'
   }
