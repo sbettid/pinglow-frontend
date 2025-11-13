@@ -13,6 +13,7 @@
       <v-card-title class="text-wrap">
         {{ check.check_name }}
         <v-icon v-if="check.notifications_muted" class="notifications-icon" icon="mdi-bell-cancel" size="small"></v-icon>
+         <v-icon v-if="check.passive" class="notifications-icon" icon="mdi-eye-check" size="small"></v-icon>
       </v-card-title>
       <v-card-subtitle v-if="check.timestamp !== null" class="last-checked">
         Checked: {{ formatDateTime(check.timestamp) }}
