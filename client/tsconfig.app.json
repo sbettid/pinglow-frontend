@@ -10,20 +10,19 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
     "types": [
       "vite/client",
       "node"
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue"
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./src/**/*.vue"
   ]
 }
