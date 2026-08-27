@@ -34,7 +34,8 @@
     <v-card>
       <div
        class="modal-rotated"
-        :class="{ rotated: isMobile && isPortrait }"
+       id="modal-content"
+       :class="{ rotated: isMobile && isPortrait }"
 
       >
       <v-card-text class="check-details">
@@ -42,12 +43,15 @@
           <div class="check-details-header">
             <b>Details</b>
             <div class="check-controls">
-            <v-menu>
+            <v-menu :location-strategy="isMobile && isPortrait? landscapeLocationStrategy: 'connected'"
+              location="bottom"
+              origin="top left"
+            >
               <template v-slot:activator="{ props }">
                  <v-btn v-bind="props" v-if="check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
                 <v-btn v-bind="props" v-else class="notifications-icon" rounded="lg" variant="plain" icon="mdi-bell" ></v-btn>
               </template>
-              <v-list class="menu" :class="{ rotated: isMobile && isPortrait }">
+              <v-list class="menu">
                 <v-list-item @click="muteNotifications(check, 60)">
                   <v-list-item-title>Mute for 1h</v-list-item-title>
                 </v-list-item>
@@ -68,11 +72,13 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-            <v-menu>
+            <v-menu :location-strategy="isMobile && isPortrait? landscapeLocationStrategy: 'connected'"
+              location="bottom"
+              origin="top left">
               <template v-slot:activator="{ props }">
                  <v-btn v-bind="props" rounded="lg" variant="plain" icon="mdi-dots-vertical"></v-btn>
               </template>
-              <v-list class="menu" :class="{ rotated: isMobile && isPortrait }">
+              <v-list class="menu">
                 <v-list-item @click="scheduleCheckNow(check)">
                   <v-list-item-title>Schedule now</v-list-item-title>
                 </v-list-item>
@@ -124,6 +130,7 @@ import { mapPerformanceData } from '@/types/PerformanceData';
 import { getCheckPerformanceData, muteNotificaton, scheduleCheckNow, unmuteNotificaton } from '@/api/pinglow';
 import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
+
 
 const emit = defineEmits(['refresh-check'])
 const props = defineProps<{ check: CheckWithStatus }>();
@@ -216,6 +223,68 @@ function getChipColor(status: string | undefined): string {
   }
 }
 
+const landscapeLocationStrategy = (
+  data: any,
+  _props: any,
+  contentStyles: any
+) => {
+  const updateLocation = () => {
+    const target = data.target.value
+    const content = data.contentEl.value
+
+    if (!target || !content || Array.isArray(target)) {
+      return
+    }
+
+    const targetRect = target.getBoundingClientRect()
+
+    // Unrotated menu dimensions
+    const menuWidth = content.offsetWidth
+    const menuHeight = content.offsetHeight
+
+    // Visual dimensions after rotate(90deg)
+    const visualWidth = menuHeight
+    const visualHeight = menuWidth
+
+    const gap = 4
+
+    const visualLeft =
+      targetRect.left - visualWidth - gap
+
+    const visualTop = targetRect.top
+
+    /*
+     * Because transform-origin is center center,
+     * CSS transforms the original box around its center.
+     *
+     * Convert the desired VISUAL top/left back into the
+     * top/left of the untransformed overlay element.
+     */
+    const left =
+      visualLeft -
+      (menuWidth - visualWidth) / 2
+
+    const top =
+      visualTop -
+      (menuHeight - visualHeight) / 2
+
+    Object.assign(contentStyles.value, {
+      position: 'fixed',
+      left: `${left}px`,
+      top: `${top}px`,
+      transform: 'rotate(90deg)',
+      transformOrigin: 'center center',
+    })
+  }
+
+  requestAnimationFrame(updateLocation)
+
+  return {
+    updateLocation,
+  }
+}
+
+
 </script>
 
 <style scoped>
@@ -225,13 +294,12 @@ function getChipColor(status: string | undefined): string {
   flex-grow: 1;
 }
 
+.menu {
+  min-width: 180px;
+}
+
 .rotated {
   transform: rotate(90deg);
-
-  &.menu {
-      transform: rotate(90deg) translateY(-50%);
-      transform-origin: top left;
-  }
 
   .check-details {
     height: 90dvw;
