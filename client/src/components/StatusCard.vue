@@ -41,6 +41,7 @@
         <div class="description">
           <div class="check-details-header">
             <b>Details</b>
+            <div class="check-controls">
             <v-menu>
               <template v-slot:activator="{ props }">
                  <v-btn v-bind="props" v-if="check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
@@ -67,6 +68,17 @@
                 </v-list-item>
               </v-list>
             </v-menu>
+            <v-menu>
+              <template v-slot:activator="{ props }">
+                 <v-btn v-bind="props" rounded="lg" variant="plain" icon="mdi-dots-vertical"></v-btn>
+              </template>
+              <v-list class="menu" :class="{ rotated: isMobile && isPortrait }">
+                <v-list-item @click="scheduleCheckNow(check)">
+                  <v-list-item-title>Schedule now</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            </div>
           </div>
           
            <div>Status:
@@ -109,7 +121,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { CheckWithStatus } from '@/types/Check'
 import { formatDateTime } from '@/utils/Datetime';
 import { mapPerformanceData } from '@/types/PerformanceData';
-import { getCheckPerformanceData, muteNotificaton, unmuteNotificaton } from '@/api/pinglow';
+import { getCheckPerformanceData, muteNotificaton, scheduleCheckNow, unmuteNotificaton } from '@/api/pinglow';
 import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
 
@@ -264,6 +276,13 @@ function getChipColor(status: string | undefined): string {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+
+  .check-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+  }
 }
 
 .notifications-muted-message {
