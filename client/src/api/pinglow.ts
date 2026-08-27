@@ -38,3 +38,11 @@ export async function unmuteNotificaton(check: CheckWithStatus): Promise<void> {
 
     return;
 }
+
+export async function scheduleCheckNow(check: CheckWithStatus): Promise<void> {
+    let baseUrl = `/check/${check.check_name}/schedule-now`;
+
+    await axiosInstance.post<void>(baseUrl);
+
+    return;
+}
