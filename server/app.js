@@ -9,7 +9,7 @@ const API_TARGET = process.env.PINGLOW_URL || 'http://localhost:8000';
 const API_KEY = process.env.PINGLOW_API_KEY || 'test123';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = process.env.VUE_APP_PATH || path.dirname(__filename);
+const __dirname = process.env.VUE_APP_PATH || path.resolve(path.dirname(__filename), '../client');
 
 app.use('/api', (req, res, next) => {
     req.headers['x-api-key'] = API_KEY;
