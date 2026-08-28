@@ -48,8 +48,8 @@
               origin="top left"
             >
               <template v-slot:activator="{ props }">
-                 <v-btn v-bind="props" v-if="check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
-                <v-btn v-bind="props" v-else class="notifications-icon" rounded="lg" variant="plain" icon="mdi-bell" ></v-btn>
+                <v-btn v-bind="props" v-if="canOperate && check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
+                <v-btn v-bind="props" v-else-if="canOperate" class="notifications-icon" rounded="lg" variant="plain" icon="mdi-bell" ></v-btn>
               </template>
               <v-list class="menu">
                 <v-list-item @click="muteNotifications(check, 60)">
@@ -76,7 +76,7 @@
               location="bottom"
               origin="top left">
               <template v-slot:activator="{ props }">
-                 <v-btn v-bind="props" rounded="lg" variant="plain" icon="mdi-dots-vertical"></v-btn>
+                <v-btn v-bind="props" v-if="canOperate" rounded="lg" variant="plain" icon="mdi-dots-vertical"></v-btn>
               </template>
               <v-list class="menu">
                 <v-list-item @click="scheduleCheckNow(check)">
@@ -133,7 +133,8 @@ import PerformanceDataChart from './PerformanceDataChart.vue'
 
 
 const emit = defineEmits(['refresh-check'])
-const props = defineProps<{ check: CheckWithStatus }>();
+const props = defineProps<{ check: CheckWithStatus, canOperate: boolean }>();
+const canOperate = computed(() => props.canOperate);
 
 const isMobile = ref(false)
 const isPortrait = ref(false)
