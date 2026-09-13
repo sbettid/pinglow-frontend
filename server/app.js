@@ -9,14 +9,17 @@ const API_TARGET = process.env.PINGLOW_URL || 'http://localhost:8000';
 const API_KEY = process.env.PINGLOW_API_KEY || 'test123';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = process.env.VUE_APP_PATH || path.resolve(path.dirname(__filename), '../client');
+const __dirname = path.dirname(__filename);
+
+// Explicit, self-documenting: where the built static assets live.
+// Override with STATIC_DIR if you ever change the container layout.
+const staticDir = process.env.STATIC_DIR || path.join(__dirname, 'dist');
 
 app.use('/api', (req, res, next) => {
     req.headers['x-api-key'] = API_KEY;
     next();
 });
 
-// Proxy middleware for /api requests
 app.use('/api', createProxyMiddleware({
     target: API_TARGET,
     changeOrigin: true,
@@ -24,13 +27,16 @@ app.use('/api', createProxyMiddleware({
     onProxyReq(proxyReq, req, res) {
         proxyReq.setHeader('x-api-key', API_KEY);
     }
-
 }));
 
-// Serve Vue frontend static files from 'dist' folder (build output)
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(staticDir));
 
-// Start server
+// SPA fallback: any non-API, non-static route serves index.html
+// so client-side routing (page refresh on deep links) works.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(staticDir, 'index.html'));
+});
+
 const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
