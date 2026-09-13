@@ -33,7 +33,7 @@ app.use(express.static(staticDir));
 
 // SPA fallback: any non-API, non-static route serves index.html
 // so client-side routing (page refresh on deep links) works.
-app.get('*', (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(staticDir, 'index.html'));
 });
 
