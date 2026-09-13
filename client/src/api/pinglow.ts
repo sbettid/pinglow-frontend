@@ -61,3 +61,14 @@ export async function scheduleCheckNow(check: CheckWithStatus): Promise<void> {
 
     return;
 }
+
+export interface CheckResultPayload {
+    output: string;
+    status: number;
+}
+
+export async function processCheckResult(check: CheckWithStatus, payload: CheckResultPayload): Promise<void> {
+    const baseUrl = `/check/${check.check_name}/result`;
+    await axiosInstance.post<void>(baseUrl, payload);
+    return;
+}

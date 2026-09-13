@@ -82,6 +82,9 @@
                 <v-list-item @click="scheduleCheckNow(check)">
                   <v-list-item-title>Schedule now</v-list-item-title>
                 </v-list-item>
+                <v-list-item @click="openProcessResultDialog(check)">
+                  <v-list-item-title>Process result</v-list-item-title>
+                </v-list-item>
               </v-list>
             </v-menu>
             </div>
@@ -119,6 +122,56 @@
       </div>
     </v-card>
   </v-dialog>
+
+  <!-- Process Result Dialog -->
+  <v-dialog 
+    v-model="processResultDialog"
+    max-width="500"
+    persistent
+  >
+    <v-card>
+      <v-card-title>Process Check Result</v-card-title>
+      <v-card-text>
+        <div class="mt-4">
+          <div class="mb-4">
+            <label class="d-block mb-2">Status</label>
+            <v-select
+              v-model="processResultStatus"
+              :items="[
+                { title: 'OK (0)', value: 0 },
+                { title: 'Warning (1)', value: 1 },
+                { title: 'Critical (2)', value: 2 }
+              ]"
+              label="Select status"
+            ></v-select>
+          </div>
+
+          <div class="mb-4">
+            <label class="d-block mb-2">Output Message</label>
+            <v-textarea
+              v-model="processResultOutput"
+              label="Result output"
+              rows="4"
+            ></v-textarea>
+          </div>
+        </div>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          text="Cancel"
+          @click="processResultDialog = false"
+          :disabled="processResultLoading"
+        ></v-btn>
+        <v-btn
+          text="Submit"
+          color="primary"
+          @click="submitProcessResult"
+          :loading="processResultLoading"
+        ></v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </div>
 </template>
 
@@ -127,7 +180,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { CheckWithStatus } from '@/types/Check'
 import { formatDateTime } from '@/utils/Datetime';
 import { mapPerformanceData } from '@/types/PerformanceData';
-import { getCheckPerformanceData, muteNotificaton, scheduleCheckNow, unmuteNotificaton } from '@/api/pinglow';
+import { getCheckPerformanceData, muteNotificaton, scheduleCheckNow, unmuteNotificaton, processCheckResult, type CheckResultPayload } from '@/api/pinglow';
 import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
 
@@ -175,6 +228,12 @@ const chartDataset = ref<ChartData<'line', Point[], unknown>>({
   datasets: []
 });
 
+// Process result dialog state
+const processResultDialog = ref(false);
+const processResultStatus = ref<number>(0);
+const processResultOutput = ref<string>('');
+const processResultLoading = ref(false);
+
 async function muteNotifications(check: CheckWithStatus, durationMinutes: number | null) {
 
   let muteUntil = null;
@@ -221,6 +280,35 @@ function getChipColor(status: string | undefined): string {
       return 'blue'
     default:
       return 'purple'
+  }
+}
+
+function openProcessResultDialog(check: CheckWithStatus) {
+  selectedCheck.value = check;
+  processResultDialog.value = true;
+  processResultStatus.value = 0;
+  processResultOutput.value = '';
+}
+
+async function submitProcessResult() {
+  if (!selectedCheck.value) return;
+
+  processResultLoading.value = true;
+  try {
+    const payload: CheckResultPayload = {
+      status: processResultStatus.value,
+      output: processResultOutput.value,
+    };
+
+    await processCheckResult(selectedCheck.value, payload);
+    
+    processResultDialog.value = false;
+    emit("refresh-check");
+  } catch (error) {
+    console.error('Failed to process check result:', error);
+    alert('Failed to process check result');
+  } finally {
+    processResultLoading.value = false;
   }
 }
 

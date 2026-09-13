@@ -1,0 +1,40 @@
+# Patterns to ignore when building packages.
+# This supports shell glob patterns, relative paths relative to this file,
+# and negated patterns.
+
+# commonly ignored files
+.DS_Store
+.git/
+.gitignore
+.bzr/
+.bzrignore
+.hg/
+.hgignore
+.svn/
+*.swp
+*.swo
+*~
+*.swp
+*.swp.*
+.#*
+.#
+
+# local environment files
+.env.local
+.env.*.local
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDEs
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/
+
+# OS
+Thumbs.db

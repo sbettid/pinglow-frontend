@@ -1,0 +1,18 @@
+apiVersion: v2
+name: pinglow-frontend
+description: A Helm chart for Pinglow Frontend
+
+type: application
+
+version: 0.1.0
+
+appVersion: "0.2.0"
+
+home: https://github.com/sbettid/pinglow-frontend
+sources:
+  - https://github.com/sbettid/pinglow-frontend
+
+keywords:
+  - monitoring
+  - pinglow
+  - dashboard
