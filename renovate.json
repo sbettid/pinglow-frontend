@@ -8,5 +8,8 @@
   ],
   "reviewers": [
     "sbettid"
+  ],
+  "labels": [
+    "dependencies"
   ]
 }
