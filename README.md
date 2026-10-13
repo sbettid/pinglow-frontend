@@ -31,7 +31,7 @@ docker build -t pinglow-frontend:latest .
 
 # Run the container
 docker run -p 80:80 \
-  -e PINGLOW_API_URL=http://pinglow-backend:8000 \
+  -e PINGLOW_URL=http://pinglow-backend:8000 \
   pinglow-frontend:latest
 ```
 
@@ -171,7 +171,7 @@ Muted status is displayed with a bell icon on the check card.
 
 ### Environment Variables
 
-- `PINGLOW_API_URL`: URL to the Pinglow backend API (used in Kubernetes deployments)
+- `PINGLOW_URL`: URL to the Pinglow backend API
 
 ### Browser Requirements
 

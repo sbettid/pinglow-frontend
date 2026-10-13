@@ -42,9 +42,12 @@ spec:
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
-            - name: PINGLOW_API_URL
+            - name: PINGLOW_URL
               value: {{ .Values.pinglow.apiUrl | quote }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-

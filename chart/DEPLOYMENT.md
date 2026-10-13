@@ -34,6 +34,7 @@ The Helm chart has minimal required configuration:
 | `image.repository` | Docker image repository | `ghcr.io/sbettid/pinglow-frontend` |
 | `image.tag` | Docker image tag (empty = Chart.appVersion) | `""` |
 | `pinglow.apiUrl` | Pinglow backend API URL | `http://pinglow:80` |
+| `envFrom` | Kubernetes environment sources, such as API-key Secrets | `[]` |
 | `service.type` | Kubernetes service type | `ClusterIP` |
 | `resources.limits` | Resource limits | `256m CPU, 128Mi RAM` |
 
@@ -144,7 +145,7 @@ kubectl get svc -n pinglow pinglow-frontend
 
 2. **Check the configured API URL:**
    ```bash
-   kubectl get deployment -n pinglow pinglow-frontend -o yaml | grep PINGLOW_API_URL
+   kubectl get deployment -n pinglow pinglow-frontend -o yaml | grep PINGLOW_URL
    ```
 
 3. **Test DNS resolution from frontend pod:**

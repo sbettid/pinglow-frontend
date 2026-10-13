@@ -8,6 +8,8 @@ image:
 
 imagePullSecrets: []
 
+envFrom: []
+
 podAnnotations: {}
 
 service:
@@ -27,4 +29,3 @@ resources:
   requests:
     cpu: 100m
     memory: 64Mi
-
