@@ -6,6 +6,14 @@ export interface PerformanceData {
     }
 }
 
+interface PerformanceDataset {
+    label: string;
+    data: Point[];
+    borderColor: string;
+    backgroundColor: string;
+    tension: number;
+}
+
 // Color palette designed for high contrast and accessibility
 // Supports up to 12 distinct metrics with clearly distinguishable colors
 const DISTINCT_COLORS = [
@@ -36,7 +44,7 @@ export function resetColorIndex(): void {
     colorIndex = 0;
 }
 
-export function mapPerformanceData(apiData: Record<string, Record<string, number>>): { label: string; data: Point[] }[] {
+export function mapPerformanceData(apiData: Record<string, Record<string, number>>): PerformanceDataset[] {
     resetColorIndex();
     const metricsMap: Record<string, Point[]> = {};
 
