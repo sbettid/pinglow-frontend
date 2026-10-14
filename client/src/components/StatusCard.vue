@@ -31,88 +31,161 @@
     :transition="isMobile ? 'dialog-bottom-transition' : 'dialog-transition'"
     :fullscreen="isMobile"
   >
-    <v-card>
+    <v-card :class="{ 'mobile-rotated-card': isMobile && isPortrait }">
       <div
        class="modal-rotated"
        id="modal-content"
        :class="{ rotated: isMobile && isPortrait }"
-
       >
-      <v-card-text class="check-details">
-        <div class="description">
-          <div class="check-details-header">
-            <b>Details</b>
-            <div class="check-controls">
-            <v-menu :location-strategy="isMobile && isPortrait? landscapeLocationStrategy: 'connected'"
-              location="bottom"
-              origin="top left"
-            >
-              <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" v-if="canOperate && check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
-                <v-btn v-bind="props" v-else-if="canOperate" class="notifications-icon" rounded="lg" variant="plain" icon="mdi-bell" ></v-btn>
-              </template>
-              <v-list class="menu">
-                <v-list-item @click="muteNotifications(check, 60)">
-                  <v-list-item-title>Mute for 1h</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="muteNotifications(check, 480)">
-                  <v-list-item-title>Mute for 8h</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="muteNotifications(check, 1440)">
-                  <v-list-item-title>Mute for 1 day</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="muteNotifications(check, 10080)">
-                  <v-list-item-title>Mute for 1 week</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="muteNotifications(check, null)">
-                  <v-list-item-title>Mute forever</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="unmuteNotifications(check)">
-                  <v-list-item-title>Un-mute</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-            <v-menu :location-strategy="isMobile && isPortrait? landscapeLocationStrategy: 'connected'"
-              location="bottom"
-              origin="top left">
-              <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" v-if="canOperate" rounded="lg" variant="plain" icon="mdi-dots-vertical"></v-btn>
-              </template>
-              <v-list class="menu">
-                <v-list-item @click="scheduleCheckNow(check)">
-                  <v-list-item-title>Schedule now</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="openProcessResultDialog(check)">
-                  <v-list-item-title>Process result</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+      <v-tabs v-model="activeTab" color="primary" grow>
+        <v-tab value="overview">Overview</v-tab>
+        <v-tab value="history">History</v-tab>
+      </v-tabs>
+
+      <v-window v-model="activeTab" class="modal-window">
+        <v-window-item value="overview">
+          <v-card-text class="check-details">
+            <div class="description">
+              <div class="check-details-header">
+                <b>Details</b>
+                <div class="check-controls">
+                <v-menu :location-strategy="isMobile && isPortrait ? landscapeLocationStrategy : 'connected'"
+                  location="bottom"
+                  origin="top left"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" v-if="canOperate && check.notifications_muted" rounded="lg" variant="plain" icon="mdi-bell-cancel"></v-btn>
+                    <v-btn v-bind="props" v-else-if="canOperate" class="notifications-icon" rounded="lg" variant="plain" icon="mdi-bell" ></v-btn>
+                  </template>
+                  <v-list class="menu">
+                    <v-list-item @click="muteNotifications(check, 60)">
+                      <v-list-item-title>Mute for 1h</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="muteNotifications(check, 480)">
+                      <v-list-item-title>Mute for 8h</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="muteNotifications(check, 1440)">
+                      <v-list-item-title>Mute for 1 day</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="muteNotifications(check, 10080)">
+                      <v-list-item-title>Mute for 1 week</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="muteNotifications(check, null)">
+                      <v-list-item-title>Mute forever</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="unmuteNotifications(check)">
+                      <v-list-item-title>Un-mute</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                <v-menu :location-strategy="isMobile && isPortrait ? landscapeLocationStrategy : 'connected'"
+                  location="bottom"
+                  origin="top left">
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" v-if="canOperate" rounded="lg" variant="plain" icon="mdi-dots-vertical"></v-btn>
+                  </template>
+                  <v-list class="menu">
+                    <v-list-item @click="scheduleCheckNow(check)">
+                      <v-list-item-title>Schedule now</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="openProcessResultDialog(check)">
+                      <v-list-item-title>Process result</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                </div>
+              </div>
+
+              <div>Status:
+                <v-chip
+                  small
+                  :color="getChipColor(selectedCheck?.status)"
+                  dark
+                  class="ml-2"
+                >
+                  {{ selectedCheck?.status }}
+                </v-chip>
+              </div>
+              <div>Output: {{ selectedCheck?.output }}</div>
+              <div class="notifications-muted-message" v-if="check.notifications_muted">
+                Notifications muted {{ check.notifications_muted_until !== null? "until " + check.notifications_muted_until: "" }}
+              </div>
+              <v-spacer></v-spacer>
             </div>
-          </div>
-          
-           <div>Status:
-            <v-chip 
-              small 
-              :color="getChipColor(selectedCheck?.status)" 
-              dark
-              class="ml-2"
-            >
-              {{ selectedCheck?.status }}
-            </v-chip>
-          </div> 
-          <div>Output: {{ selectedCheck?.output }}</div>
-          <div class="notifications-muted-message" v-if="check.notifications_muted">
-            Notifications muted {{ check.notifications_muted_until !== null? "until " + check.notifications_muted_until: "" }}
-          </div>
-          <v-spacer></v-spacer>
-        </div>
-        
-          <performance-data-chart class="chart" :data="chartDataset"></performance-data-chart>
-      </v-card-text>
+
+            <performance-data-chart class="chart" :data="chartDataset"></performance-data-chart>
+          </v-card-text>
+        </v-window-item>
+
+        <v-window-item value="history">
+          <v-card-text class="history-tab">
+            <div class="history-header">
+              <div class="text-medium-emphasis">
+                {{ historyResult?.total ?? 0 }} {{ (historyResult?.total ?? 0) === 1 ? 'event' : 'events' }}
+              </div>
+              <v-switch
+                :model-value="historyStateChanges"
+                label="Only state changes"
+                color="primary"
+                density="compact"
+                hide-details
+                class="history-state-changes"
+                @update:model-value="updateHistoryStateChanges"
+              ></v-switch>
+              <v-btn
+                icon="mdi-refresh"
+                variant="text"
+                aria-label="Refresh history"
+                :disabled="historyLoading"
+                @click="loadCheckHistory"
+              ></v-btn>
+            </div>
+
+            <v-progress-linear v-if="historyLoading" indeterminate color="primary"></v-progress-linear>
+            <v-alert v-else-if="historyError" type="error" variant="tonal" class="mb-4">
+              <div class="d-flex align-center justify-space-between ga-2">
+                <span>{{ historyError }}</span>
+                <v-btn size="small" variant="text" @click="loadCheckHistory">Retry</v-btn>
+              </div>
+            </v-alert>
+            <div v-else-if="historyResult?.total === 0" class="history-empty">
+              No history events have been recorded for this check yet.
+            </div>
+            <div v-else class="history-list">
+              <v-card
+                v-for="event in historyResult?.history ?? []"
+                :key="event.timestamp"
+                variant="flat"
+                class="history-event"
+              >
+                <v-card-item>
+                  <template #prepend>
+                    <v-icon :color="getChipColor(event.status)" icon="mdi-circle-medium"></v-icon>
+                  </template>
+                  <v-card-title class="history-event-title">
+                    <v-chip :color="getChipColor(event.status)" size="small" variant="tonal">
+                      {{ event.status }}
+                    </v-chip>
+                    <span class="history-timestamp">{{ formatDateTime(event.timestamp) }}</span>
+                  </v-card-title>
+                </v-card-item>
+                <v-card-text class="history-output">{{ event.output }}</v-card-text>
+              </v-card>
+            </div>
+
+            <v-pagination
+              v-if="historyResult && historyResult.total > historyPageSize"
+              v-model="historyPage"
+              :length="Math.ceil(historyResult.total / historyPageSize)"
+              :total-visible="isMobile ? 5 : 7"
+              density="comfortable"
+              class="history-pagination"
+            ></v-pagination>
+          </v-card-text>
+        </v-window-item>
+      </v-window>
 
       <v-card-actions class="actions">
-        <v-spacer class="space"></v-spacer>
-
         <v-btn
           class="close"
           text="Close"
@@ -126,10 +199,15 @@
   <!-- Process Result Dialog -->
   <v-dialog 
     v-model="processResultDialog"
-    max-width="500"
+    :max-width="isMobile ? '100%' : '500'"
+    :fullscreen="isMobile"
     persistent
   >
-    <v-card>
+    <v-card :class="{ 'mobile-rotated-card': isMobile && isPortrait }">
+      <div
+        class="process-result-content"
+        :class="{ rotated: isMobile && isPortrait }"
+      >
       <v-card-title>Process Check Result</v-card-title>
       <v-card-text>
         <div class="mt-4">
@@ -170,17 +248,19 @@
           :loading="processResultLoading"
         ></v-btn>
       </v-card-actions>
+      </div>
     </v-card>
   </v-dialog>
 </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { CheckWithStatus } from '@/types/Check'
 import { formatDateTime } from '@/utils/Datetime';
 import { mapPerformanceData } from '@/types/PerformanceData';
-import { getCheckPerformanceData, muteNotificaton, scheduleCheckNow, unmuteNotificaton, processCheckResult, type CheckResultPayload } from '@/api/pinglow';
+import { getCheckHistory, getCheckPerformanceData, muteNotificaton, scheduleCheckNow, unmuteNotificaton, processCheckResult, type CheckResultPayload } from '@/api/pinglow';
+import type { CheckHistoryPage } from '@/types/Check';
 import type { ChartData, Point } from 'chart.js';
 import PerformanceDataChart from './PerformanceDataChart.vue'
 
@@ -223,7 +303,15 @@ const cardColor = computed(() => {
 
 
 const dialog = ref(false);
+const activeTab = ref('overview');
 const selectedCheck = ref<CheckWithStatus | null>(null);
+const historyPageSize = 10;
+const historyPage = ref(1);
+const historyStateChanges = ref(false);
+const historyResult = ref<CheckHistoryPage | null>(null);
+const historyLoading = ref(false);
+const historyError = ref('');
+let historyRequestId = 0;
 const chartDataset = ref<ChartData<'line', Point[], unknown>>({
   datasets: []
 });
@@ -233,6 +321,50 @@ const processResultDialog = ref(false);
 const processResultStatus = ref<number>(0);
 const processResultOutput = ref<string>('');
 const processResultLoading = ref(false);
+
+async function loadCheckHistory() {
+  if (!selectedCheck.value) return;
+
+  const requestId = ++historyRequestId;
+  historyLoading.value = true;
+  historyError.value = '';
+  historyResult.value = null;
+
+  try {
+    const result = await getCheckHistory(
+      selectedCheck.value,
+      historyPage.value,
+      historyPageSize,
+      historyStateChanges.value
+    );
+    if (requestId === historyRequestId) historyResult.value = result;
+  } catch (error) {
+    console.error('Failed to load check history:', error);
+    if (requestId === historyRequestId) {
+      historyError.value = 'Unable to load check history.';
+    }
+  } finally {
+    if (requestId === historyRequestId) historyLoading.value = false;
+  }
+}
+
+watch([activeTab, historyPage, selectedCheck], ([tab]) => {
+  if (tab === 'history') {
+    void loadCheckHistory();
+  } else {
+    historyRequestId++;
+    historyLoading.value = false;
+  }
+});
+
+function updateHistoryStateChanges(enabled: boolean | null) {
+  historyStateChanges.value = enabled === true;
+  if (historyPage.value !== 1) {
+    historyPage.value = 1;
+  } else if (activeTab.value === 'history') {
+    void loadCheckHistory();
+  }
+}
 
 async function muteNotifications(check: CheckWithStatus, durationMinutes: number | null) {
 
@@ -259,6 +391,11 @@ async function unmuteNotifications(check: CheckWithStatus) {
 
 async function openModal(check: CheckWithStatus) {
   selectedCheck.value = check
+  activeTab.value = 'overview'
+  historyPage.value = 1
+  historyStateChanges.value = false
+  historyResult.value = null
+  historyError.value = ''
   dialog.value = true
 
   const performanceData = await getCheckPerformanceData(check);
@@ -326,36 +463,21 @@ const landscapeLocationStrategy = (
     }
 
     const targetRect = target.getBoundingClientRect()
-
-    // Unrotated menu dimensions
     const menuWidth = content.offsetWidth
     const menuHeight = content.offsetHeight
-
-    // Visual dimensions after rotate(90deg)
     const visualWidth = menuHeight
     const visualHeight = menuWidth
-
+    const margin = 8
     const gap = 4
-
-    const visualLeft =
-      targetRect.left - visualWidth - gap
-
-    const visualTop = targetRect.top
-
-    /*
-     * Because transform-origin is center center,
-     * CSS transforms the original box around its center.
-     *
-     * Convert the desired VISUAL top/left back into the
-     * top/left of the untransformed overlay element.
-     */
-    const left =
-      visualLeft -
-      (menuWidth - visualWidth) / 2
-
-    const top =
-      visualTop -
-      (menuHeight - visualHeight) / 2
+    const maxLeft = Math.max(margin, window.innerWidth - visualWidth - margin)
+    const maxTop = Math.max(margin, window.innerHeight - visualHeight - margin)
+    const leftOfTarget = targetRect.left - visualWidth - gap
+    const rightOfTarget = targetRect.right + gap
+    const desiredLeft = leftOfTarget >= margin ? leftOfTarget : rightOfTarget
+    const visualLeft = Math.min(Math.max(desiredLeft, margin), maxLeft)
+    const visualTop = Math.min(Math.max(targetRect.top, margin), maxTop)
+    const left = visualLeft - (menuWidth - visualWidth) / 2
+    const top = visualTop - (menuHeight - visualHeight) / 2
 
     Object.assign(contentStyles.value, {
       position: 'fixed',
@@ -368,11 +490,8 @@ const landscapeLocationStrategy = (
 
   requestAnimationFrame(updateLocation)
 
-  return {
-    updateLocation,
-  }
+  return { updateLocation }
 }
-
 
 </script>
 
@@ -381,46 +500,137 @@ const landscapeLocationStrategy = (
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-height: 0;
+}
+
+.mobile-rotated-card {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.modal-rotated {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.modal-rotated.rotated,
+.process-result-content.rotated {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100dvh;
+  height: 100vw;
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+}
+
+.process-result-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.process-result-content :deep(.v-card-text) {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.process-result-content :deep(.v-card-actions) {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
+
+.modal-rotated :deep(.v-tabs) {
+  flex: 0 0 auto;
+}
+
+.modal-window {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.modal-window :deep(.v-window__container),
+.modal-window :deep(.v-window-item) {
+  height: 100%;
+}
+
+.actions {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
+
+.chart {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100% !important;
+}
+
+.history-tab {
+  min-height: 280px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.history-state-changes {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  margin-inline-end: 8px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-event {
+  border-radius: 12px;
+  background: rgba(var(--v-theme-on-surface), 0.035);
+}
+
+.history-event-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.history-timestamp {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+}
+
+.history-output {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding-top: 8px;
+}
+
+.history-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+}
+
+.history-pagination {
+  margin-top: 12px;
 }
 
 .menu {
   min-width: 180px;
-}
-
-.rotated {
-  transform: rotate(90deg);
-
-  .check-details {
-    height: 90dvw;
-    width: 97dvh;
-    padding: 15px;
-  }
-
-  .description {
-    min-width: 200px;
-    margin-top: 20px;
-  }
-
-  .chart {
-    align-self: center;
-    width: 70% !important;
-    margin-top: 20px;
-  }
-
-  .actions {
-    width: 97dvh;
-    justify-content: center;
-
-    .space {
-      flex-grow: unset;
-      width: 0;
-      height: 0;
-    }
-
-    .close {
-      padding-bottom: 20px;
-    }
-  }
 }
 
 .notifications-icon {
@@ -449,7 +659,14 @@ const landscapeLocationStrategy = (
 
 @media (max-width: 768px) {
   .check-details {
-    flex-direction: row;
+    flex-direction: column;
+  }
+
+  .chart {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 </style>
