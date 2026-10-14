@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Check, CheckWithStatus } from '@/types/Check'
+import type { Check, CheckHistoryPage, CheckWithStatus } from '@/types/Check'
 import type { PerformanceData } from '@/types/PerformanceData';
 
 const axiosInstance = axios.create({ baseURL: "/api", withCredentials: true });
@@ -26,6 +26,19 @@ export async function getChecks(): Promise<Check[]> {
 
 export async function getCheckStatus(check: Check): Promise<CheckWithStatus> {
     const response = await axiosInstance.get<CheckWithStatus>(`/check-status/${check.check_name}`);
+    return response.data;
+}
+
+export async function getCheckHistory(
+    check: CheckWithStatus,
+    page = 1,
+    size = 10,
+    stateChanges = false
+): Promise<CheckHistoryPage> {
+    const response = await axiosInstance.get<CheckHistoryPage>(
+        `/check-history/${encodeURIComponent(check.check_name)}`,
+        { params: { page, size, state_changes: stateChanges } }
+    );
     return response.data;
 }
 

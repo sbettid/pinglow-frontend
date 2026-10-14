@@ -14,3 +14,16 @@ export interface CheckWithStatus {
     notifications_muted: boolean | null,
     notifications_muted_until: String | null
 }
+
+export interface CheckHistoryEntry {
+    timestamp: string,
+    status: string,
+    output: string
+}
+
+export interface CheckHistoryPage {
+    page: number,
+    size: number,
+    total: number,
+    history: CheckHistoryEntry[]
+}
