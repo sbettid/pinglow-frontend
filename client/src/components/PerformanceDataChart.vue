@@ -2,7 +2,9 @@
     <div class="no-performance-data" v-if="Object.keys(props.data.datasets).length === 0">
       No performance data available.
     </div>
-    <Line v-else ref="lineChart" :data="props.data" :options="chartOptions" :plugins="[firstZoomPlugin]" />
+    <div v-else class="chart-container">
+      <Line ref="lineChart" :data="props.data" :options="chartOptions" :plugins="[firstZoomPlugin]" />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -76,6 +78,7 @@ const firstZoomPlugin = {
 const chartOptions = computed<ChartOptions<'line'>>(() => {
   return {
   responsive: true,
+  maintainAspectRatio: false,
   scales: {
     x: {
       type: 'time',
@@ -162,5 +165,12 @@ function zoomToLastPercent(percent: number) {
   margin-top: 20px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
 </style>

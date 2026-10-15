@@ -31,16 +31,27 @@
     :transition="isMobile ? 'dialog-bottom-transition' : 'dialog-transition'"
     :fullscreen="isMobile"
   >
-    <v-card :class="{ 'mobile-rotated-card': isMobile && isPortrait }">
+    <v-card
+      class="check-modal-card"
+      :class="{ 'mobile-rotated-card': isMobile && isPortrait }"
+    >
       <div
        class="modal-rotated"
        id="modal-content"
        :class="{ rotated: isMobile && isPortrait }"
       >
-      <v-tabs v-model="activeTab" color="primary" grow>
-        <v-tab value="overview">Overview</v-tab>
-        <v-tab value="history">History</v-tab>
-      </v-tabs>
+      <div class="modal-header">
+        <v-tabs v-model="activeTab" color="primary" grow>
+          <v-tab value="overview">Overview</v-tab>
+          <v-tab value="history">History</v-tab>
+        </v-tabs>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          aria-label="Close dialog"
+          @click="dialog = false"
+        ></v-btn>
+      </div>
 
       <v-window v-model="activeTab" class="modal-window">
         <v-window-item value="overview">
@@ -185,13 +196,6 @@
         </v-window-item>
       </v-window>
 
-      <v-card-actions class="actions">
-        <v-btn
-          class="close"
-          text="Close"
-          @click="dialog = false"
-        ></v-btn>
-      </v-card-actions>
       </div>
     </v-card>
   </v-dialog>
@@ -500,7 +504,9 @@ const landscapeLocationStrategy = (
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  height: 100%;
   min-height: 0;
+  overflow: hidden;
 }
 
 .mobile-rotated-card {
@@ -508,6 +514,11 @@ const landscapeLocationStrategy = (
   width: 100vw;
   height: 100dvh;
   overflow: hidden;
+}
+
+.check-modal-card {
+  height: min(82dvh, 760px);
+  flex: 0 0 auto;
 }
 
 .modal-rotated {
@@ -545,34 +556,56 @@ const landscapeLocationStrategy = (
   justify-content: flex-end;
 }
 
-.modal-rotated :deep(.v-tabs) {
+.modal-header {
+  display: flex;
+  align-items: center;
   flex: 0 0 auto;
+}
+
+.modal-header :deep(.v-tabs) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.modal-header :deep(.v-btn) {
+  flex: 0 0 auto;
+  margin-inline-end: 8px;
 }
 
 .modal-window {
   flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
-.modal-window :deep(.v-window__container),
-.modal-window :deep(.v-window-item) {
+.modal-window :deep(.v-window__container) {
+  display: flex;
+  flex: 1 1 0;
   height: 100%;
+  min-height: 0;
 }
 
-.actions {
-  flex: 0 0 auto;
-  justify-content: flex-end;
+.modal-window :deep(.v-window-item) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  height: 100%;
+  min-height: 0;
 }
 
 .chart {
   flex: 1 1 auto;
   min-height: 0;
   width: 100% !important;
+  height: 320px;
 }
 
 .history-tab {
+  flex: 1 1 auto;
+  overflow: hidden;
   min-height: 280px;
+  display: flex;
+  flex-direction: column;
 }
 
 .history-header {
@@ -593,9 +626,17 @@ const landscapeLocationStrategy = (
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .history-event {
+  flex: 0 0 auto;
   border-radius: 12px;
   background: rgba(var(--v-theme-on-surface), 0.035);
 }
@@ -626,7 +667,8 @@ const landscapeLocationStrategy = (
 }
 
 .history-pagination {
-  margin-top: 12px;
+  flex: 0 0 auto;
+  margin-top: auto;
 }
 
 .menu {
@@ -658,15 +700,39 @@ const landscapeLocationStrategy = (
 }
 
 @media (max-width: 768px) {
+  .check-modal-card {
+    height: 100dvh;
+  }
+
   .check-details {
-    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
   }
 
   .chart {
-    flex: 1 1 auto;
-    min-height: 0;
     width: 100% !important;
-    height: 100% !important;
+    height: clamp(220px, 38vh, 360px) !important;
+    max-height: 100%;
+    flex: 1 1 0;
+  }
+
+  .history-tab {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .history-list {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    touch-action: pan-y;
+  }
+
+  .history-event {
+    width: 100%;
   }
 }
 </style>
