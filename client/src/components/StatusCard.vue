@@ -162,7 +162,15 @@
             <div v-else-if="historyResult?.total === 0" class="history-empty">
               No history events have been recorded for this check yet.
             </div>
-            <div v-else class="history-list">
+            <div
+              v-else
+              class="history-list"
+              :class="{ 'rotated-history-list': isMobile && isPortrait }"
+              @touchstart="startHistoryTouch"
+              @touchmove="moveHistoryTouch"
+              @touchend="endHistoryTouch"
+              @touchcancel="endHistoryTouch"
+            >
               <v-card
                 v-for="event in historyResult?.history ?? []"
                 :key="event.timestamp"
@@ -316,9 +324,38 @@ const historyResult = ref<CheckHistoryPage | null>(null);
 const historyLoading = ref(false);
 const historyError = ref('');
 let historyRequestId = 0;
+let historyTouchStartY: number | null = null;
 const chartDataset = ref<ChartData<'line', Point[], unknown>>({
   datasets: []
 });
+
+function startHistoryTouch(event: TouchEvent) {
+  if (!isMobile.value || !isPortrait.value) return;
+
+  historyTouchStartY = event.touches[0]?.clientY ?? null;
+  event.stopPropagation();
+}
+
+function moveHistoryTouch(event: TouchEvent) {
+  if (!isMobile.value || !isPortrait.value || historyTouchStartY === null) return;
+
+  const touch = event.touches[0];
+  const list = event.currentTarget;
+
+  if (!touch || !(list instanceof HTMLElement)) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+  list.scrollLeft -= touch.clientY - historyTouchStartY;
+  historyTouchStartY = touch.clientY;
+}
+
+function endHistoryTouch(event: TouchEvent) {
+  if (!isMobile.value || !isPortrait.value) return;
+
+  historyTouchStartY = null;
+  event.stopPropagation();
+}
 
 // Process result dialog state
 const processResultDialog = ref(false);
@@ -733,6 +770,19 @@ const landscapeLocationStrategy = (
 
   .history-event {
     width: 100%;
+  }
+
+  .rotated-history-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    touch-action: none;
+  }
+
+  .rotated-history-list .history-event {
+    flex: 0 0 260px;
+    align-self: flex-start;
+    width: 260px;
   }
 }
 </style>
