@@ -2,6 +2,18 @@
 
 A modern, responsive Vue.js frontend for [Pinglow](https://github.com/sbettid/pinglow), a Kubernetes-ready monitoring engine.
 
+## Screenshots
+
+The home screen shows grouped checks and their current status:
+
+![Pinglow frontend home screen](docs/screenshots/home.png)
+
+Select a check to inspect its latest result and performance data:
+
+![Pinglow check details with performance chart](docs/screenshots/check-details.png)
+
+For the monitoring engine and deployment documentation, see the [Pinglow repository](https://github.com/sbettid/pinglow).
+
 ## Features
 
 - **Real-time Check Monitoring**: View status and performance data for all configured checks
