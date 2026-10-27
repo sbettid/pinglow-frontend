@@ -51,7 +51,7 @@
             v-for="group in pagedGroups"
             :key="group.id"
             cols="12"
-            md="6"
+            :md="isGroupExpanded(group.id) ? 12 : 6"
             class="d-flex"
           >
             <v-card class="group-card flex-grow-1" variant="outlined">
@@ -59,6 +59,7 @@
                 block
                 variant="text"
                 class="group-toggle"
+                :ripple="false"
                 :aria-expanded="isGroupExpanded(group.id)"
                 :aria-label="`${isGroupExpanded(group.id) ? 'Collapse' : 'Expand'} ${group.name}`"
                 @click="toggleGroup(group.id)"
@@ -305,8 +306,8 @@ async function refreshCheckStatus(check_name: string) {
   min-width: 0;
 }
 .group-check-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
   gap: 16px;
   min-width: 0;
 }
