@@ -58,7 +58,12 @@
           <v-card-text class="check-details">
             <div class="description">
               <div class="check-details-header">
-                <b>Details</b>
+                <div class="check-details-heading">
+                  <b>Details</b>
+                  <v-chip size="small" variant="tonal" color="secondary">
+                    {{ executionTargetLabel }}
+                  </v-chip>
+                </div>
                 <div class="check-controls">
                 <v-menu :location-strategy="isMobile && isPortrait ? landscapeLocationStrategy : 'connected'"
                   location="bottom"
@@ -280,6 +285,12 @@ import PerformanceDataChart from './PerformanceDataChart.vue'
 const emit = defineEmits(['refresh-check'])
 const props = defineProps<{ check: CheckWithStatus, canOperate: boolean }>();
 const canOperate = computed(() => props.canOperate);
+const executionTargetLabel = computed(() => {
+  const runOn = props.check.run_on ?? 'cluster';
+  return runOn.startsWith('agent/')
+    ? `Agent group: ${runOn.slice('agent/'.length)}`
+    : runOn === 'cluster' ? 'Cluster' : runOn;
+});
 
 const isMobile = ref(false)
 const isPortrait = ref(false)
@@ -729,6 +740,13 @@ const landscapeLocationStrategy = (
     gap: 10px;
     align-items: center;
   }
+}
+
+.check-details-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .notifications-muted-message {

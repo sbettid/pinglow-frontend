@@ -10,6 +10,7 @@ export interface Check {
 export interface CheckWithStatus {
     check_name: string,
     passive: boolean,
+    run_on?: string,
     output: string,
     status: string,
     timestamp: string | null,
